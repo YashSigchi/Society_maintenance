@@ -261,6 +261,33 @@ export const updateComplaintStatus = async (req: Request, res: Response) => {
   }
 };
 
+// export const bulkUpdateStatus = async (req: Request, res: Response) => {
+//   try {
+//     const { ids, status } = req.body as { ids: string[]; status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' };
+//     if (!Array.isArray(ids) || !ids.length || !status) {
+//       return res.status(400).json({ message: 'ids and status are required' });
+//     }
+
+//     let updated = 0;
+//     for (const id of ids) {
+//       const original = { ...req.body, status };
+//       req.params.id = id;
+//       req.body = original;
+//       const mockRes = {
+//         statusCode: 200,
+//         status(code: number) { this.statusCode = code; return this; },
+//         json() { return this; },
+//       } as unknown as Response;
+//       await updateComplaintStatus(req, mockRes);
+//       if ((mockRes as any).statusCode < 400) updated += 1;
+//     }
+
+//     return res.json({ updated });
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
+
 export const bulkUpdateStatus = async (req: Request, res: Response) => {
   try {
     const { ids, status } = req.body as { ids: string[]; status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' };
@@ -268,18 +295,31 @@ export const bulkUpdateStatus = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'ids and status are required' });
     }
 
+    interface MockResponse {
+      statusCode: number;
+      status(code: number): MockResponse;
+      json(payload?: unknown): MockResponse;
+    }
+
     let updated = 0;
     for (const id of ids) {
       const original = { ...req.body, status };
       req.params.id = id;
       req.body = original;
-      const mockRes = {
+
+      const mockRes: MockResponse = {
         statusCode: 200,
-        status(code: number) { this.statusCode = code; return this; },
-        json() { return this; },
-      } as unknown as Response;
-      await updateComplaintStatus(req, mockRes);
-      if ((mockRes as any).statusCode < 400) updated += 1;
+        status(code) {
+          this.statusCode = code;
+          return this;
+        },
+        json() {
+          return this;
+        },
+      };
+
+      await updateComplaintStatus(req, mockRes as unknown as Response);
+      if (mockRes.statusCode < 400) updated += 1;
     }
 
     return res.json({ updated });
