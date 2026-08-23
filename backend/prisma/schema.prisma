@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String             @id @default(uuid())
+  name               String
+  email              String             @unique
+  passwordHash       String
+  role               Role               @default(RESIDENT)
+  apartmentNumber    String?
+  phone              String?
+  avatarUrl          String?
+  mustChangePassword Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  complaints         Complaint[]
+  notices            Notice[]
+  history            ComplaintHistory[]
+  notes              ComplaintNote[]
+}
+
+enum Role {
+  RESIDENT
+  ADMIN
+}
+
+model Complaint {
+  id                 String                 @id @default(uuid())
+  complaintNumber    String                 @unique
+  residentId         String
+  category           String
+  description        String
+  location           String?
+  status             ComplaintStatus        @default(OPEN)
+  priority           Priority               @default(LOW)
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  resolvedAt         DateTime?
+  overdueEscalatedAt DateTime?
+
+  resident           User                   @relation(fields: [residentId], references: [id])
+  history            ComplaintHistory[]
+  attachments        ComplaintAttachment[]
+  notes              ComplaintNote[]
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model ComplaintHistory {
+  id             String           @id @default(uuid())
+  complaintId    String
+  actorId        String
+  previousStatus ComplaintStatus
+  newStatus      ComplaintStatus
+  note           String?
+  eventType      String           @default("STATUS")
+  createdAt      DateTime         @default(now())
+
+  complaint      Complaint        @relation(fields: [complaintId], references: [id])
+  actor          User             @relation(fields: [actorId], references: [id])
+}
+
+model ComplaintAttachment {
+  id           String    @id @default(uuid())
+  complaintId  String
+  fileName     String
+  fileUrl      String
+  thumbnailUrl String?
+  mimeType     String
+  fileSize     Int
+  sortOrder    Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  complaint    Complaint @relation(fields: [complaintId], references: [id])
+}
+
+model ComplaintNote {
+  id          String    @id @default(uuid())
+  complaintId String
+  authorId    String
+  content     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  author      User      @relation(fields: [authorId], references: [id])
+}
+
+model Notice {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  important Boolean  @default(false)
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author    User     @relation(fields: [authorId], references: [id])
+}
+
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
