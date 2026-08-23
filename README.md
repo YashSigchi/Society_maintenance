@@ -124,6 +124,7 @@ npm run seed:demo
 *Demo Credentials:*
 * Admin: `admin@societyhub.com` / `admin123`
 * Resident: `alice@example.com` / `resident123`
+* Resident: `bob@example.com` / `resident123`
 
 **Start the Backend Server:**
 ```bash
