@@ -18,9 +18,14 @@ Experience the live application here:
 | **Frontend (App)** | 🟢 Online | [**society-maintenance-i33v.onrender.com**](https://society-maintenance-i33v.onrender.com) |
 | **Backend (API)** | 🟢 Online | [**society-maintenance-st1q.onrender.com**](https://society-maintenance-st1q.onrender.com) |
 
-> **💡 Important Note:** To see the actual work done on the website, please open the **Frontend (App)** URL above! You can register a new resident account or use the demo credentials provided in the installation section below. 
-> 
-> *(Since the backend API is hosted on Render's free tier, the very first login/request might take 30-50 seconds to respond as the server spins up from sleep mode).*
+> **💡 Important Evaluation Notes:**
+> *   **View the App:** To interact with the project and evaluate the UI/UX, please open the **Frontend (App)** URL above. 
+> *   **Admin Access:** A pre-configured Admin account is already present on the live server. To evaluate the admin dashboard, overdue tracking, and notice publishing, please log in with:
+>     *   **Email:** `admin@societyhub.com`
+>     *   **Password:** `admin123`
+>     *(From this dashboard, you can provision additional admin accounts if desired).*
+> *   **Resident Access & Email Testing:** To experience the resident workflow, click "Register" and create a new account. **Please use your actual personal email address** when registering. This will allow you to test the automated email functionality (welcome emails, status updates, and important notices). *Note: Please check your **Spam/Junk folder** if the emails do not immediately appear in your inbox.*
+> *   **Cold Starts:** Since the backend API is hosted on Render's free tier, the very first login/request might take 30-50 seconds to respond as the server spins up from sleep mode.
 
 ---
 
